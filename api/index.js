@@ -15,6 +15,7 @@ const app = express();
 // CORS middleware - Updated for Vercel
 const allowedOrigins = [
   process.env.FRONTEND_URL,
+  "https://ticketingsystem-dusky.vercel.app",
   "https://myticketsystems.vercel.app",
   "http://localhost:5173",
   "http://localhost:3000"
