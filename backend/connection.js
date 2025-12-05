@@ -8,8 +8,8 @@ if (!cached) {
 }
 
 export const connectDB = async () => {
-  // If already connected, return the existing connection
-  if (cached.conn) {
+  // Check if already connected
+  if (cached.conn && mongoose.connection.readyState === 1) {
     return cached.conn;
   }
 
@@ -17,11 +17,19 @@ export const connectDB = async () => {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
     };
 
     cached.promise = mongoose.connect(process.env.MONGO_URI, opts).then((mongoose) => {
-      console.log("MongoDB connected");
+      console.log("✅ MongoDB connected");
+      cached.conn = mongoose;
       return mongoose;
+    }).catch((err) => {
+      // Clear the promise on error so we can retry
+      cached.promise = null;
+      cached.conn = null;
+      console.error("❌ MongoDB connection error:", err.message);
+      throw err;
     });
   }
 
@@ -29,6 +37,7 @@ export const connectDB = async () => {
     cached.conn = await cached.promise;
   } catch (e) {
     cached.promise = null;
+    cached.conn = null;
     console.error("MongoDB connection failed:", e.message);
     throw e;
   }
