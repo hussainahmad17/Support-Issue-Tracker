@@ -47,6 +47,37 @@ app.get("/", (req, res) => {
   res.send("✅ Backend is live on Vercel 🚀");
 });
 
+// Health check endpoint
+app.get("/api/health", async (req, res) => {
+  try {
+    const health = {
+      status: "ok",
+      timestamp: new Date().toISOString(),
+      mongodb: "unknown",
+      env: {
+        hasMongoUri: !!process.env.MONGO_URI,
+        hasJwtSecret: !!process.env.JWT_SECRET,
+        nodeEnv: process.env.NODE_ENV
+      }
+    };
+    
+    // Test MongoDB connection
+    try {
+      await connectDB();
+      health.mongodb = "connected";
+    } catch (err) {
+      health.mongodb = `error: ${err.message}`;
+    }
+    
+    res.status(200).json(health);
+  } catch (err) {
+    res.status(500).json({ 
+      status: "error", 
+      message: err.message 
+    });
+  }
+});
+
 // API routes - Vercel forwards full path including /api prefix
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
@@ -54,7 +85,20 @@ app.use("/api/tickets", ticketRoutes);
 app.use("/api/comments", commentRoutes);
 
 // Connect to MongoDB (connection is cached for serverless)
-connectDB().catch(console.error);
+// Don't block the export, but log errors
+connectDB().catch((err) => {
+  console.error("❌ MongoDB connection error:", err.message);
+  console.error("Check MONGO_URI environment variable");
+});
+
+// Add error handling middleware
+app.use((err, req, res, next) => {
+  console.error("❌ Server error:", err);
+  res.status(500).json({ 
+    message: "Internal server error", 
+    error: process.env.NODE_ENV === "production" ? "Something went wrong" : err.message 
+  });
+});
 
 // Export the Express app as a serverless function for Vercel
 export default app;
