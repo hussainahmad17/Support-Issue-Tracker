@@ -42,6 +42,26 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
+// Middleware to ensure MongoDB connection before handling requests
+app.use(async (req, res, next) => {
+  // Skip for health check endpoint
+  if (req.path === '/api/health' || req.path === '/') {
+    return next();
+  }
+  
+  try {
+    // Ensure MongoDB connection is established
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error("❌ Database connection failed in middleware:", error.message);
+    res.status(500).json({ 
+      message: "Database connection failed", 
+      error: error.message 
+    });
+  }
+});
+
 // Root test route
 app.get("/", (req, res) => {
   res.send("✅ Backend is live on Vercel 🚀");
