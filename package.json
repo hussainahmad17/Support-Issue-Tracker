@@ -7,11 +7,10 @@
     "install:frontend": "cd frontend && npm install",
     "install:backend": "cd backend && npm install",
     "build:frontend": "cd frontend && npm run build",
-    "dev:frontend": "cd frontend && npm run dev",
-    "dev:backend": "cd backend && npm run dev"
+    "dev:frontend": "node api.js && cd frontend && npm run dev",
+    "dev:backend": "node api.js && cd backend && npm run dev"
   },
   "engines": {
     "node": "20.x"
   }
 }
-
