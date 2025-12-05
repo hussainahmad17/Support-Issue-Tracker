@@ -45,6 +45,9 @@ vercel
    - **Build Command**: `cd frontend && npm install && npm run build`
    - **Output Directory**: `frontend/dist`
    - **Install Command**: `cd backend && npm install && cd ../frontend && npm install`
+   - **Node.js Version**: Go to Settings → Build & Development → Node.js Version → Select `20.x`
+
+**⚠️ IMPORTANT**: After importing, go to **Project Settings → Build & Development Settings** and explicitly set **Node.js Version** to `20.x`. This ensures Vercel uses Node.js 20.x for both build and serverless functions, matching the `engines` field in your `package.json` files.
 
 ### 3. Set Environment Variables in Vercel
 

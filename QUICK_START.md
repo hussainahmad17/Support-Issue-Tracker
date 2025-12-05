@@ -38,7 +38,22 @@ vercel login
 vercel
 ```
 
-#### Step 3: Set Environment Variables in Vercel
+#### Step 3: Configure Node.js Version in Vercel ⚠️ IMPORTANT
+
+**CRITICAL**: After importing your project, you MUST explicitly set the Node.js version:
+
+1. Go to your project in Vercel Dashboard
+2. Navigate to **Settings** → **Build & Development Settings**
+3. Under **Node.js Version**, select **20.x** from the dropdown
+4. Save the settings
+
+This ensures Vercel uses Node.js 20.x for both:
+- Build process (installing dependencies, building frontend)
+- Serverless functions (your backend API)
+
+**Why this matters**: While `package.json` files specify `engines: "20.x"`, explicitly setting it in Vercel dashboard ensures consistency and prevents version mismatches if Vercel updates defaults.
+
+#### Step 4: Set Environment Variables in Vercel
 
 Go to Project Settings → Environment Variables and add:
 
@@ -52,7 +67,7 @@ Go to Project Settings → Environment Variables and add:
 - `CLOUDINARY_API_KEY`
 - `CLOUDINARY_API_SECRET`
 
-#### Step 4: Deploy!
+#### Step 5: Deploy!
 
 Click "Deploy" and wait for the build to complete.
 
