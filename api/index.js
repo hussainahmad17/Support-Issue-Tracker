@@ -1,0 +1,60 @@
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import ticketRoutes from "../backend/routes/ticketRoutes.js";
+import cookieParser from "cookie-parser";
+import commentRoutes from "../backend/routes/commentRoutes.js";
+import authRoutes from "../backend/routes/authRoutes.js";
+import userRoutes from "../backend/routes/userRoutes.js";
+import { connectDB } from "../backend/connection.js";
+
+dotenv.config();
+
+const app = express();
+
+// CORS middleware - Updated for Vercel
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "https://myticketsystems.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:3000"
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+      } else {
+        callback(null, true); // Allow all origins for now, can restrict later
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+// Middlewares
+app.use(express.json());
+app.use(cookieParser());
+
+// Root test route
+app.get("/", (req, res) => {
+  res.send("✅ Backend is live on Vercel 🚀");
+});
+
+// API routes - Vercel forwards full path including /api prefix
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/tickets", ticketRoutes);
+app.use("/api/comments", commentRoutes);
+
+// Connect to MongoDB (connection is cached for serverless)
+connectDB().catch(console.error);
+
+// Export the Express app as a serverless function for Vercel
+export default app;
+

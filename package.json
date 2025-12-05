@@ -1,0 +1,17 @@
+{
+  "name": "support-ticket-system",
+  "version": "1.0.0",
+  "description": "Internal Support Ticket System - Full Stack Application",
+  "private": true,
+  "scripts": {
+    "install:frontend": "cd frontend && npm install",
+    "install:backend": "cd backend && npm install",
+    "build:frontend": "cd frontend && npm run build",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev"
+  },
+  "engines": {
+    "node": "20.x"
+  }
+}
+
